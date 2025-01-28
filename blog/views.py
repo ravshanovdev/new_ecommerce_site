@@ -1,11 +1,45 @@
 from django.shortcuts import render
-from models import Orders, Category, Product, Payments, Cart, CartItems
-from serializer import ProductSerializer, OrdersSerializer, CartSerializer, CategorySerializer, \
+from .models import Orders, Category, Product, Payments, Cart, CartItems
+from .serializer import ProductSerializer, OrdersSerializer, CartSerializer, CategorySerializer, \
     CartItemsSerializer, PaymentsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
+
+
+# CART
+# Create Cart
+
+class CreateCartApiView(APIView):
+    def post(self, request):
+        try:
+            serializer = CartSerializer(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status.HTTP_201_CREATED)
+            return Response(serializer.errors)
+
+        except Exception as e:
+            return Response({"exception": e})
+
+
+# ORDERS
+# Create Orders
+
+class CreateOrdersApiView(APIView):
+    def post(self,request):
+        try:
+            serializer = OrdersSerializer(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status.HTTP_201_CREATED)
+            return Response(serializer.errors)
+
+        except Exception as e:
+            return Response({"exception": e})
 
 
 # PAYMENT
@@ -44,7 +78,7 @@ class UpdatePaymentApiView(APIView):
 
 # payment detail
 
-class PaymentDetail(APIView):
+class PaymentDetailApiView(APIView):
     def get(self, request):
         try:
             payment = Payments.objects.filter(user=request.user)

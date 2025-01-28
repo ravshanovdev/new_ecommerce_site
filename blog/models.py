@@ -24,6 +24,9 @@ class Product(DateTimes):
     image_url = models.ImageField(upload_to='images/', null=True, blank=True)
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"mahsulot nomi: {self.name}, narxi: {self.price} so'm, kategoriyasi: {self.category_id}"
+
 
 class Cart(DateTimes):
     user_identifier = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,14 +38,14 @@ class Cart(DateTimes):
 
 
 class CartItems(DateTimes):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user_id} - {self.product_id}"
+        return f"user: {self.user}, product: {self.product_id.name}, quantity: {self.quantity}, price: {self.price}"
 
 
 CHOICE_METHOD = (
@@ -61,7 +64,7 @@ class Orders(DateTimes):
     status = models.CharField(max_length=150, choices=CHOICE_METHOD)
 
     def __str__(self):
-        return self.full_name
+        return f"name: {self.full_name}, status: {self.status}, location: {self.location}"
 
 
 CLICK_METHOD = (
@@ -96,7 +99,7 @@ def correct_price(sender, **kwargs):
     total_cart_items = CartItems.objects.filter(user=cart_items.user)
     cart_items.total_items = len(total_cart_items)
 
-    cart = Cart.objects.get(id=cart_items.cart.id)
+    cart = Cart.objects.get(id=cart_items.cart_id.id)
     cart.total_price = cart_items.price
     cart.save()
 
