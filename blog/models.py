@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from accounts.models import CustomUser
 # Create your models here.
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -18,6 +19,7 @@ class Category(DateTimes):
 
 
 class Product(DateTimes):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
@@ -29,16 +31,16 @@ class Product(DateTimes):
 
 
 class Cart(DateTimes):
-    user_identifier = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_identifier = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     total_price = models.FloatField(default=0)
-    ordered = models.BooleanField()
+    ordered = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user_identifier} - {self.total_price}"
 
 
 class CartItems(DateTimes):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
@@ -56,6 +58,7 @@ CHOICE_METHOD = (
 
 
 class Orders(DateTimes):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     delivery_method = models.CharField(max_length=255)
     location = models.CharField(max_length=355)
@@ -81,7 +84,7 @@ PAYMENT_STATUS = (
 
 
 class Payments(DateTimes):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     order_id = models.ForeignKey(Orders, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=150, choices=CLICK_METHOD)
     screenshot_url = models.CharField(max_length=150)

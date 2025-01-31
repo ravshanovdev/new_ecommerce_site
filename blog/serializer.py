@@ -1,15 +1,20 @@
 from rest_framework import serializers
 from .models import Orders, Category, Product, Payments, Cart, CartItems
-from django.contrib.auth.models import User
+# from django.contrib.auth import get_user_model
+#
+# User = get_user_model()
+from accounts.models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["id", "Username"]
+        model = CustomUser
+        fields = ["id", "phone"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -22,6 +27,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class OrdersSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Orders
         fields = "__all__"
@@ -36,11 +43,11 @@ class PaymentsSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user_identifier = UserSerializer(read_only=True)
 
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = ["id", "ordered", "user_identifier", "total_price"]
 
 
 class CartItemsSerializer(serializers.ModelSerializer):
