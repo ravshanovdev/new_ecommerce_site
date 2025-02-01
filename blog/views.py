@@ -40,9 +40,76 @@ class CreateProductApiView(APIView):
             return Response({"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# update product
+
+class UpdateProductApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+
+            if product and product.user == request.user:
+                serializer = ProductSerializer(product, data=request.data)
+
+                if serializer.is_valid():
+                    serializer.save(user=request.user)
+                    return Response(serializer.data, status.HTTP_200_OK)
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+            else:
+                return Response("Product Not Found", status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# detail Product
 
+class DetailProductApiView(APIView):
+    def get(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+
+            if product:
+                serializer = ProductSerializer(product)
+                return Response(serializer.data, status.HTTP_200_OK)
+            return Response("Product Not Found", status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ProductListApiView(APIView):
+    def get(self, request):
+        try:
+            product = Product.objects.all()
+
+            if product:
+                serializer = ProductSerializer(product, many=True)
+                return Response(serializer.data)
+            return Response("Products Not Created Yet", status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# delete Product
+
+class DeleteProductApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk, user=request.user)
+
+            if product:
+                product.delete()
+
+                return Response("Product was Successfully Deleted", status.HTTP_200_OK)
+
+        except Product.DoesNotExist:
+            return Response("Product Not Found", status.HTTP_404_NOT_FOUND)
 
 # CART
 # Create Cart

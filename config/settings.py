@@ -55,9 +55,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+from datetime import timedelta
+
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "ACCESS_TOKEN_LIFETIME": (timedelta(days=3))
 
 }
 
