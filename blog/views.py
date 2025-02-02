@@ -111,6 +111,7 @@ class DeleteProductApiView(APIView):
         except Product.DoesNotExist:
             return Response("Product Not Found", status.HTTP_404_NOT_FOUND)
 
+
 # CART
 # Create Cart
 
@@ -143,10 +144,9 @@ class CreateOrdersApiView(APIView):
             serializer = OrdersSerializer(data=request.data)
 
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(user=request.user)
                 return Response(serializer.data, status.HTTP_201_CREATED)
             return Response(serializer.errors)
-
 
         except Exception as e:
 
@@ -190,3 +190,37 @@ class DetailOrderApiView(APIView):
         serializer = OrdersSerializer(order)
 
         return Response(serializer.data)
+
+
+# list your orders
+
+class ListYourOrdersApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            order = Orders.objects.filter(user=request.user)
+
+            if order:
+                serializer = OrdersSerializer(order, many=True)
+                return Response(serializer.data, status.HTTP_200_OK)
+            return Response("You have not any order", status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# delete your orders
+
+class DeleteOrderApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, reqeust, pk):
+        try:
+            order = Orders.objects.get(pk=pk, user=reqeust.user)
+
+            order.delete()
+            return Response("Order Was Successfully Deleted", status.HTTP_200_OK)
+
+        except Orders.DoesNotExist:
+            return Response({"exception": "Orders Not Found"}, status.HTTP_404_NOT_FOUND)
