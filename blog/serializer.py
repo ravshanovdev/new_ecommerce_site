@@ -1,8 +1,5 @@
 from rest_framework import serializers
 from .models import Orders, Category, Product, Payments, Cart, CartItems
-# from django.contrib.auth import get_user_model
-#
-# User = get_user_model()
 from accounts.models import CustomUser
 
 
