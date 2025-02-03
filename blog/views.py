@@ -1,23 +1,11 @@
 from django.shortcuts import render
-from .models import Orders, Category, Product, Payments, Cart, CartItems
-from .serializer import ProductSerializer, OrdersSerializer, CartSerializer, CategorySerializer, \
+from .models import Orders, Product, Payments, Cart, CartItems
+from .serializer import ProductSerializer, OrdersSerializer, CartSerializer, \
     CartItemsSerializer, PaymentsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
-
-# Category
-
-class CreateCategoryApiView(APIView):
-    def post(self, request):
-        serializer = CategorySerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 # PRODUCT

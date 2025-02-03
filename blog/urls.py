@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import CreateOrdersApiView, CreateCartApiView, UpdateOrderApiView, DetailOrderApiView, \
-    CreateCategoryApiView, CreateProductApiView, UpdateProductApiView, DetailProductApiView, \
+    CreateProductApiView, UpdateProductApiView, DetailProductApiView, \
     ProductListApiView, DeleteProductApiView, ListYourOrdersApiView, DeleteOrderApiView
 
 urlpatterns = [
@@ -10,8 +10,6 @@ urlpatterns = [
     path("create_order/", CreateOrdersApiView.as_view(), ),
     path("update_order/<int:pk>/", UpdateOrderApiView.as_view(), ),
     path("detail_order/<int:pk>/", DetailOrderApiView.as_view(), ),
-    # urls category
-    path("create_category/", CreateCategoryApiView.as_view(), ),
     # urls product
     path("create_product/", CreateProductApiView.as_view(), ),
     path("update_product/<int:pk>/", UpdateProductApiView.as_view(), ),
